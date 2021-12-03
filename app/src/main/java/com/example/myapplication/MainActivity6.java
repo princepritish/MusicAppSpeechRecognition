@@ -1,6 +1,6 @@
 package com.example.myapplication;
 
-
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -8,13 +8,22 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicMarkableReference;
 
 
 public class MainActivity6 extends AppCompatActivity {
@@ -23,7 +32,6 @@ public class MainActivity6 extends AppCompatActivity {
     private MediaRecorder mediaRecorder;
     private MediaPlayer mediaPlayer;
     private String AudioSavaPath = null;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +46,7 @@ public class MainActivity6 extends AppCompatActivity {
         StartRecording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
 
                 if (checkPermissions() == true) {
 
@@ -64,6 +73,9 @@ public class MainActivity6 extends AppCompatActivity {
 
                     ActivityCompat.requestPermissions(MainActivity6.this,new String[]{
                             Manifest.permission.RECORD_AUDIO,Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    },1);
+                    ActivityCompat.requestPermissions(MainActivity6.this,new String[]{
+                            Manifest.permission.RECORD_AUDIO,Manifest.permission.READ_EXTERNAL_STORAGE
                     },1);
                 }
             }
@@ -104,6 +116,27 @@ public class MainActivity6 extends AppCompatActivity {
                     mediaPlayer.stop();
                     mediaPlayer.release();
                     Toast.makeText(MainActivity6.this, "Stopped playing", Toast.LENGTH_SHORT).show();
+                    FirebaseStorage storage = FirebaseStorage.getInstance("gs://musicapp-a705a.appspot.com");
+                    StorageReference storageReference = storage.getReference();
+                    //StorageReference audio = storageReference.child(AudioSavaPath);
+                    Uri file = Uri.fromFile(new File(AudioSavaPath));
+                    StorageReference audio = storageReference.child("tracks/"+file.getLastPathSegment());
+                    UploadTask uploadTask = audio.putFile(file);
+
+                    // Register observers to listen for when the download is done or if it fails
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            Toast.makeText(MainActivity6.this,"Failed",Toast.LENGTH_SHORT).show();
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Toast.makeText(MainActivity6.this,"Success",Toast.LENGTH_SHORT).show();
+                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                            // ...
+                        }
+                    });
                 }
             }
         });
@@ -116,9 +149,11 @@ public class MainActivity6 extends AppCompatActivity {
                 Manifest.permission.RECORD_AUDIO);
         int second = ActivityCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int third = ActivityCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE);
 
         return first == PackageManager.PERMISSION_GRANTED &&
-                second == PackageManager.PERMISSION_GRANTED;
+                second == PackageManager.PERMISSION_GRANTED && third==PackageManager.PERMISSION_GRANTED;
     }
 
 
