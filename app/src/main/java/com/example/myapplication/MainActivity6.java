@@ -51,6 +51,7 @@ public class MainActivity6 extends AppCompatActivity {
     String lang;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +61,8 @@ public class MainActivity6 extends AppCompatActivity {
         StopRecording = findViewById(R.id.button22);
         StartPlaying = findViewById(R.id.button25);
         StopPlaying = findViewById(R.id.button26);
+        TextView textView = (TextView) findViewById(R.id.text);
+
 
 
         StartRecording.setOnClickListener(new View.OnClickListener() {
@@ -110,6 +113,8 @@ public class MainActivity6 extends AppCompatActivity {
 
                 mediaRecorder.stop();
                 mediaRecorder.release();
+                textView.setText("Loading");
+
                 Toast.makeText(MainActivity6.this, "Recording stopped", Toast.LENGTH_SHORT).show();
                 FirebaseStorage storage = FirebaseStorage.getInstance("gs://musicapp-a705a.appspot.com");
                 StorageReference storageReference = storage.getReference();
@@ -133,7 +138,7 @@ public class MainActivity6 extends AppCompatActivity {
                     }
                 });
 
-                TextView textView = (TextView) findViewById(R.id.text);
+
 // ...
 
 // Instantiate the RequestQueue.
@@ -203,6 +208,7 @@ public class MainActivity6 extends AppCompatActivity {
     private void readdata(String res) {
 
         TextView textView1 = (TextView) findViewById(R.id.text3);
+        textView1.setText("Loading");
         reference = FirebaseDatabase.getInstance("https://musicapp-a705a-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Emotions");
         reference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
