@@ -23,8 +23,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -40,6 +45,10 @@ public class MainActivity6 extends AppCompatActivity {
     private MediaRecorder mediaRecorder;
     private MediaPlayer mediaPlayer;
     private String AudioSavaPath = null;
+    private String AudioSavaPath1 = null;
+    private String AudioSavaPath2 = null;
+    DatabaseReference reference;
+    String lang;
 
 
     @Override
@@ -62,6 +71,10 @@ public class MainActivity6 extends AppCompatActivity {
 
                     AudioSavaPath = Environment.getExternalStorageDirectory().getAbsolutePath()
                             +"/"+"recordingAudio.mp3";
+                    AudioSavaPath1 = Environment.getExternalStorageDirectory().getAbsolutePath()
+                            +"/"+"happy.mp3";
+                    AudioSavaPath2 = Environment.getExternalStorageDirectory().getAbsolutePath()
+                            +"/"+"sad.mp3";
 
                     mediaRecorder = new MediaRecorder();
                     mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -98,6 +111,57 @@ public class MainActivity6 extends AppCompatActivity {
                 mediaRecorder.stop();
                 mediaRecorder.release();
                 Toast.makeText(MainActivity6.this, "Recording stopped", Toast.LENGTH_SHORT).show();
+                FirebaseStorage storage = FirebaseStorage.getInstance("gs://musicapp-a705a.appspot.com");
+                StorageReference storageReference = storage.getReference();
+                //StorageReference audio = storageReference.child(AudioSavaPath);
+                Uri file = Uri.fromFile(new File(AudioSavaPath));
+                StorageReference audio = storageReference.child("tracks/"+file.getLastPathSegment());
+                UploadTask uploadTask = audio.putFile(file);
+
+                // Register observers to listen for when the download is done or if it fails
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Toast.makeText(MainActivity6.this,"Failed",Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(MainActivity6.this,"Success",Toast.LENGTH_SHORT).show();
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                        // ...
+                    }
+                });
+
+                TextView textView = (TextView) findViewById(R.id.text);
+// ...
+
+// Instantiate the RequestQueue.
+                RequestQueue queue = Volley.newRequestQueue(MainActivity6.this);
+                String url ="http://35.200.155.9:8000/user/get_mood";
+
+// Request a string response from the provided URL.
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String raw_response) {
+                                String response=raw_response.replaceAll("\"","");
+                                // Display the first 500 characters of the response string.
+                                textView.setText(response);
+                                readdata(response);
+                                //System.out.println(response);
+
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println(error);
+                        // textView.setText();
+                    }
+                });
+
+// Add the request to the RequestQueue.
+                queue.add(stringRequest);
             }
         });
 
@@ -107,7 +171,10 @@ public class MainActivity6 extends AppCompatActivity {
 
                 mediaPlayer = new MediaPlayer();
                 try {
-                    mediaPlayer.setDataSource(AudioSavaPath);
+                    if(lang.equalsIgnoreCase("happy.mp3"))
+                        mediaPlayer.setDataSource(AudioSavaPath1);
+                    else
+                        mediaPlayer.setDataSource(AudioSavaPath2);
                     mediaPlayer.prepare();
                     mediaPlayer.start();
                     Toast.makeText(MainActivity6.this, "Start playing", Toast.LENGTH_SHORT).show();
@@ -126,58 +193,44 @@ public class MainActivity6 extends AppCompatActivity {
                     mediaPlayer.stop();
                     mediaPlayer.release();
                     Toast.makeText(MainActivity6.this, "Stopped playing", Toast.LENGTH_SHORT).show();
-                    FirebaseStorage storage = FirebaseStorage.getInstance("gs://musicapp-a705a.appspot.com");
-                    StorageReference storageReference = storage.getReference();
-                    //StorageReference audio = storageReference.child(AudioSavaPath);
-                    Uri file = Uri.fromFile(new File(AudioSavaPath));
-                    StorageReference audio = storageReference.child("tracks/"+file.getLastPathSegment());
-                    UploadTask uploadTask = audio.putFile(file);
 
-                    // Register observers to listen for when the download is done or if it fails
-                    uploadTask.addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            Toast.makeText(MainActivity6.this,"Failed",Toast.LENGTH_SHORT).show();
-                        }
-                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Toast.makeText(MainActivity6.this,"Success",Toast.LENGTH_SHORT).show();
-                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                            // ...
-                        }
-                    });
-
-                    TextView textView = (TextView) findViewById(R.id.text);
-// ...
-
-// Instantiate the RequestQueue.
-                    RequestQueue queue = Volley.newRequestQueue(MainActivity6.this);
-                    String url ="localhost:8000";
-
-// Request a string response from the provided URL.
-                    StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                            new Response.Listener<String>() {
-                                @Override
-                                public void onResponse(String response) {
-                                    // Display the first 500 characters of the response string.
-                                    textView.setText("Response is: "+ response.substring(0,500));
-                                }
-                            }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            textView.setText("That didn't work!");
-                        }
-                    });
-
-// Add the request to the RequestQueue.
-                    queue.add(stringRequest);
                 }
             }
         });
 
 
     }
+    private void readdata(String res) {
+
+        TextView textView1 = (TextView) findViewById(R.id.text3);
+        reference = FirebaseDatabase.getInstance("https://musicapp-a705a-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Emotions");
+        reference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+
+                if (task.isSuccessful()){
+
+                    if (task.getResult().exists()){
+
+                        Toast.makeText(MainActivity6.this,"Successfully Read",Toast.LENGTH_SHORT).show();
+                        DataSnapshot dataSnapshot = task.getResult();
+                        lang=String.valueOf(dataSnapshot.child(res).getValue());
+                        textView1.setText(lang);
+
+                        //Toast.makeText(MainActivity3.this,lang,Toast.LENGTH_SHORT).show();
+                    }else {
+
+                        Toast.makeText(MainActivity6.this,"Cannot Read Emotion",Toast.LENGTH_SHORT).show();
+
+                    }
+
+
+                }else {
+                    Toast.makeText(MainActivity6.this,"Failed to read",Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });}
 
     private boolean checkPermissions() {
         int first = ActivityCompat.checkSelfPermission(getApplicationContext(),
@@ -192,7 +245,8 @@ public class MainActivity6 extends AppCompatActivity {
     }
     public void logout(View view)
     {
-        new User(MainActivity6.this).removeuser();
+        User user=new User(MainActivity6.this);
+        user.removeuser();
         Intent intent = new Intent(MainActivity6.this, MainActivity.class);
         startActivity(intent);
         finish();

@@ -50,23 +50,39 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 else {
-                HashMap<String, Object> map = new HashMap<>();
-
-                map.put("Song1", "A.mp3");
-                map.put("Song2", "A.mp3");
-                map.put("Song3", "A.mp3");
-                HashMap<String, Object> map1 = new HashMap<>();
-
-                map1.put("Song1", "A.mp3");
-                map1.put("Song2", "A.mp3");
-                map1.put("Song3", "A.mp3");
+//                HashMap<String, Object> map = new HashMap<>();
+//
+//                map.put("Song1", "A.mp3");
+//                map.put("Song2", "A.mp3");
+//                map.put("Song3", "A.mp3");
+//                HashMap<String, Object> map1 = new HashMap<>();
+//
+//                map1.put("Song1", "A.mp3");
+//                map1.put("Song2", "A.mp3");
+//                map1.put("Song3", "A.mp3");
                   FirebaseDatabase.getInstance("https://musicapp-a705a-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Users").child(mEdit1.getText().toString());
                 FirebaseDatabase.getInstance("https://musicapp-a705a-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Users").child(mEdit1.getText().toString()).child("Username").setValue(mEdit1.getText().toString());
                   FirebaseDatabase.getInstance("https://musicapp-a705a-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Users").child(mEdit1.getText().toString()).child("Contact No").setValue(mEdit.getText().toString());
-                   FirebaseDatabase.getInstance("https://musicapp-a705a-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Users").child(mEdit1.getText().toString()).child("Playlist").child("Default Playlist").updateChildren(map);
-                FirebaseDatabase.getInstance("https://musicapp-a705a-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Users").child(mEdit1.getText().toString()).child("Queue").updateChildren(map);
+//                   FirebaseDatabase.getInstance("https://musicapp-a705a-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Users").child(mEdit1.getText().toString()).child("Playlist").child("Default Playlist").updateChildren(map);
+//                FirebaseDatabase.getInstance("https://musicapp-a705a-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Users").child(mEdit1.getText().toString()).child("Queue").updateChildren(map);
+//                    HashMap<String, Object> map1 = new HashMap<>();
+//                    map1.put("male_angry", "sad.mp3");
+//                    map1.put("male_disgust", "sad.mp3");
+//                    map1.put("male_fear", "sad.mp3");
+//                    map1.put("male_happy", "happy.mp3");
+//                    map1.put("male_neutral", "happy.mp3");
+//                    map1.put("male_sad", "sad.mp3");
+//                    map1.put("male_surprise", "happy.mp3");
+//                    map1.put("female_angry", "sad.mp3");
+//                    map1.put("female_disgust", "sad.mp3");
+//                    map1.put("female_fear", "sad.mp3");
+//                    map1.put("female_happy", "happy.mp3");
+//                    map1.put("female_neutral", "happy.mp3");
+//                    map1.put("female_sad", "sad.mp3");
+//                    map1.put("female_surprise", "happy.mp3");
+//                    FirebaseDatabase.getInstance("https://musicapp-a705a-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Emotions").updateChildren(map1);
 
-                //FirebaseDatabase.getInstance("https://musicapp-a705a-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference().child("users").child("User1").setValue("01");
+                    //FirebaseDatabase.getInstance("https://musicapp-a705a-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference().child("users").child("User1").setValue("01");
 
                     Toast.makeText(getApplicationContext(), "Welcome Mr." + mEdit1.getText().toString() + mEdit.getText().toString(), Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainActivity.this, MainActivity2.class);
