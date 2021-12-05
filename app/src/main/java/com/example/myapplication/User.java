@@ -2,13 +2,14 @@ package com.example.myapplication;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.provider.SyncStateContract;
 
 public class User {
     Context context;
     SharedPreferences sharedPreferences;
     public void removeuser()
     {
-        sharedPreferences.edit().clear().commit();
+        sharedPreferences.edit().clear().apply();
     }
 
     public String getUsername() {
@@ -18,11 +19,12 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
-        sharedPreferences.edit().putString("Userdata",username).commit();
+        sharedPreferences.edit().putString("Userdata",username).apply();
+      //  sharedPreferences.edit().putString(Constants.KEY_EMAIL,username).apply();
     }
     public void setLang(String lang){
         this.lang=lang;
-        sharedPreferences.edit().putString("Lang",lang).commit();
+        sharedPreferences.edit().putString("Lang",lang).apply();
     }
     public String getLang() {
         this.lang=sharedPreferences.getString("Lang","");

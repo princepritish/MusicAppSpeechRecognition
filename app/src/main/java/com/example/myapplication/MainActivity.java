@@ -98,5 +98,6 @@ public class MainActivity extends AppCompatActivity {
     public void openNewActivity1(){
         Intent intent = new Intent(this, MainActivity6.class);
         startActivity(intent);
+        finish();
     }
 }

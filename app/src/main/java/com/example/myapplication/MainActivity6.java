@@ -71,13 +71,12 @@ public class MainActivity6 extends AppCompatActivity {
 
 
                 if (checkPermissions() == true) {
-
-                    AudioSavaPath = Environment.getExternalStorageDirectory().getAbsolutePath()
-                            +"/"+"recordingAudio.mp3";
-                    AudioSavaPath1 = Environment.getExternalStorageDirectory().getAbsolutePath()
-                            +"/"+"happy.mp3";
-                    AudioSavaPath2 = Environment.getExternalStorageDirectory().getAbsolutePath()
-                            +"/"+"sad.mp3";
+                    AudioSavaPath = getExternalCacheDir().getAbsolutePath();
+                    AudioSavaPath += "/audiorecordtest.mp3";
+//                    AudioSavaPath = Environment.getExternalStorageDirectory().getAbsolutePath()
+//                            +"/tracks"+"recordingAudio.mp3";
+                    AudioSavaPath1 = getExternalCacheDir().getAbsolutePath()+"/"+"happy.mp3";
+                    AudioSavaPath2 =  getExternalCacheDir().getAbsolutePath()+"/"+"sad.mp3";
 
                     mediaRecorder = new MediaRecorder();
                     mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -175,17 +174,30 @@ public class MainActivity6 extends AppCompatActivity {
             public void onClick(View v) {
 
                 mediaPlayer = new MediaPlayer();
-                try {
-                    if(lang.equalsIgnoreCase("happy.mp3"))
-                        mediaPlayer.setDataSource(AudioSavaPath1);
-                    else
-                        mediaPlayer.setDataSource(AudioSavaPath2);
+                try{
+
+                    Uri myUri = Uri.parse("android.resource://" + v.getContext().getPackageName() + "/" + R.raw.happy);
+                    System.out.println(myUri);
+                    mediaPlayer.setDataSource(v.getContext(), myUri);
                     mediaPlayer.prepare();
-                    mediaPlayer.start();
-                    Toast.makeText(MainActivity6.this, "Start playing", Toast.LENGTH_SHORT).show();
-                } catch (IOException e) {
+                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener(){
+                        @Override
+                        public void onPrepared(MediaPlayer playerM){
+                            mediaPlayer.start();
+                        }
+                    });
+                }catch(IOException e){
                     e.printStackTrace();
                 }
+
+                //                    if(lang.equalsIgnoreCase("happy.mp3"))
+//                        mediaPlayer.setDataSource(AudioSavaPath1);
+//                    else
+//                        mediaPlayer.setDataSource(AudioSavaPath2);
+//                mediaPlayer.create(MainActivity6.this, R.raw.happy);
+//                //mediaPlayer.prepare();
+//                mediaPlayer.start();
+                Toast.makeText(MainActivity6.this, "Start playing", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -196,9 +208,8 @@ public class MainActivity6 extends AppCompatActivity {
                 if (mediaPlayer != null) {
 
                     mediaPlayer.stop();
-                    mediaPlayer.release();
+                   mediaPlayer.release();
                     Toast.makeText(MainActivity6.this, "Stopped playing", Toast.LENGTH_SHORT).show();
-
                 }
             }
         });
