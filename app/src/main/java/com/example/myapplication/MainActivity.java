@@ -45,14 +45,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         User user=new User(MainActivity.this);
-        if(user.getUsername()=="")
-        {
-            setContentView(R.layout.activity_main);
-        }
-        else
+        setContentView(R.layout.activity_main);
+        if(!(user.getUsername().equalsIgnoreCase("")))
         {
             openNewActivity1();
+            finish();
         }
+
         Button bt= (Button) findViewById(R.id.button);
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 else {
-                  FirebaseDatabase.getInstance("https://musicapp-a705a-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Users").child(mEdit1.getText().toString());
+                    FirebaseDatabase.getInstance("https://musicapp-a705a-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Users").child(mEdit1.getText().toString());
                 FirebaseDatabase.getInstance("https://musicapp-a705a-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Users").child(mEdit1.getText().toString()).child("Username").setValue(mEdit1.getText().toString());
                   FirebaseDatabase.getInstance("https://musicapp-a705a-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Users").child(mEdit1.getText().toString()).child("Contact No").setValue(mEdit.getText().toString());
                     Toast.makeText(getApplicationContext(), "Welcome Mr." + mEdit1.getText().toString() + mEdit.getText().toString(), Toast.LENGTH_SHORT).show();

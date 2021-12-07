@@ -56,11 +56,13 @@ public class MainActivity6 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main6);
-
+        User user=new User(MainActivity6.this);
+        String name= user.getUsername();
+        Toast.makeText(MainActivity6.this,"Welcome Back "+name,Toast.LENGTH_SHORT).show();
         StartRecording = findViewById(R.id.button24);
         StopRecording = findViewById(R.id.button22);
-        StartPlaying = findViewById(R.id.button25);
-        StopPlaying = findViewById(R.id.button26);
+//        StartPlaying = findViewById(R.id.button25);
+//        StopPlaying = findViewById(R.id.button26);
         TextView textView = (TextView) findViewById(R.id.text);
 
 
@@ -131,7 +133,7 @@ public class MainActivity6 extends AppCompatActivity {
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(MainActivity6.this,"Success",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity6.this,"Successfully Saved Recording To Firebase",Toast.LENGTH_SHORT).show();
                         // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                         // ...
                     }
@@ -152,7 +154,11 @@ public class MainActivity6 extends AppCompatActivity {
                                 String response=raw_response.replaceAll("\"","");
                                 // Display the first 500 characters of the response string.
                                 textView.setText(response);
-                                readdata(response);
+                                Toast.makeText(MainActivity6.this,"Sucessfully Read Emotion From API",Toast.LENGTH_SHORT).show();
+                                Intent intent=new Intent(MainActivity6.this,SplashScreen56.class);
+                                intent.putExtra("mood",response);
+                                startActivity(intent);
+                                //readdata(response);
                                 //System.out.println(response);
 
                             }
@@ -169,53 +175,42 @@ public class MainActivity6 extends AppCompatActivity {
             }
         });
 
-        StartPlaying.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                mediaPlayer = new MediaPlayer();
-                try{
-
-                    Uri myUri = Uri.parse("android.resource://" + v.getContext().getPackageName() + "/" + R.raw.happy);
-                    System.out.println(myUri);
-                    mediaPlayer.setDataSource(v.getContext(), myUri);
-                    mediaPlayer.prepare();
-                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener(){
-                        @Override
-                        public void onPrepared(MediaPlayer playerM){
-                            mediaPlayer.start();
-                        }
-                    });
-                }catch(IOException e){
-                    e.printStackTrace();
-                }
-
-                //                    if(lang.equalsIgnoreCase("happy.mp3"))
-//                        mediaPlayer.setDataSource(AudioSavaPath1);
-//                    else
-//                        mediaPlayer.setDataSource(AudioSavaPath2);
-//                mediaPlayer.create(MainActivity6.this, R.raw.happy);
-//                //mediaPlayer.prepare();
-//                mediaPlayer.start();
-                Toast.makeText(MainActivity6.this, "Start playing", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        StopPlaying.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (mediaPlayer != null) {
-
-                    mediaPlayer.stop();
-                   mediaPlayer.release();
-                    Toast.makeText(MainActivity6.this, "Stopped playing", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-
-    }
+//        StartPlaying.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                mediaPlayer = new MediaPlayer();
+//                try{
+//
+//                    Uri myUri = Uri.parse("android.resource://" + v.getContext().getPackageName() + "/" + R.raw.happy);
+//                    System.out.println(myUri);
+//                    mediaPlayer.setDataSource(v.getContext(), myUri);
+//                    mediaPlayer.prepare();
+//                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener(){
+//                        @Override
+//                        public void onPrepared(MediaPlayer playerM){
+//                            mediaPlayer.start();
+//                        }
+//                    });
+//                }catch(IOException e){
+//                    e.printStackTrace();
+//                }
+//
+//                //                    if(lang.equalsIgnoreCase("happy.mp3"))
+////                        mediaPlayer.setDataSource(AudioSavaPath1);
+////                    else
+////                        mediaPlayer.setDataSource(AudioSavaPath2);
+////                mediaPlayer.create(MainActivity6.this, R.raw.happy);
+////                //mediaPlayer.prepare();
+////                mediaPlayer.start();
+//                Toast.makeText(MainActivity6.this, "Start playing", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//
+//
+//
+//
+ }
     private void readdata(String res) {
 
         TextView textView1 = (TextView) findViewById(R.id.text3);
